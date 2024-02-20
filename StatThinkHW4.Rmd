@@ -1,0 +1,149 @@
+---
+title: "HW 4"
+author: "Leo Fowler"
+date: "2024-02-19"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(mosaic)
+library(dplyr)
+```
+
+## Problem 1
+
+```{r echo=FALSE}
+setwd("~/downloads")
+gas <- read.csv("gasprices.csv")
+mean(Price ~ Competitors,data=gas)
+diffmean(Price ~ Competitors,data=gas)
+boot_gas <- do(10000)*diffmean(Price ~ Competitors, data=resample(gas))
+ggplot(data=boot_gas, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference In Mean', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference in
+Mean Price if Gas Station Has Competitors')
+confint(boot_gas, level=0.95)
+```
+
+### The first theory that I investigated is if gas stations charge more if they lack direct competitors in sight. To figure this out I boostrapped the data of difference of mean prices of every gas station compared to if they have competition. Once I bootstrapped it I graphed it and got the 95% confidence interval. The 95% confidence interval ranges from -0.05502381 to 0.007906659. This confidence interval contains zero which means its staistically insignificant. Since the interval is statistically insignificant we can conclude that the theory that gas stations charge more if they lack direct competitors in sight is not supported by the data.
+
+
+```{r echo=FALSE}
+lm_rich = lm(Price ~ Income, data=gas)
+coef(lm_rich)
+boot_rich <- do(10000)*lm(Price ~ Income, data=resample(gas))
+ggplot(data = boot_rich, aes(x=Income, y=Intercept)) + geom_point() + 
+  geom_smooth(aes(x=Income, y=Intercept), method='lm') + labs(x ='Income', y='Price', title = 'Distribution of Price of Gas Per Income in the Area')
+confint(boot_rich, level = 0.95) %>% filter(name == 'Income')
+```
+
+### The next theory I looked into is if the gas prices are higher if the area the gas station is located in is richer. To figure this out I boostrapped the regression model of the data of difference in mean prices of every gas station and the income in the area. Once I bootstrapped it I graphed the data and found the equation of the linear regression line. Lastly, I got the 95% confidence interval and it ranges from 0.0000006701977 to	0.000001773746. This means that we are 95% confident that for every increase in price of gas at a gas station that income increased between $0.0000006701977 to	$0.000001773746. This increase shows that supports the theory that the richer the area, the higher the gas prices.
+
+```{r echo=FALSE}
+mean(Price ~ Stoplight,data=gas)
+diffmean(Price ~ Stoplight,data=gas)
+boot_light <- do(10000)*diffmean(Price ~ Stoplight, data=resample(gas))
+ggplot(data=boot_light, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference In Mean', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference in
+Mean Price if Gas Station is at Stoplight')
+confint(boot_light, level=0.95)
+```
+
+### Another theory that I investigated is if gas stations at stoplights charge more.I boostrapped the data of the difference in mean prices of every gas station compared to if they are at a stoplight. Once I bootstrapped it I graphed it and got the 95% confidence interval. The 95% confidence interval ranges from -0.03909949 to 0.03143911. This confidence interval contains zero which means its staistically insignificant. Since the interval is statistically insignificant we can conclude that the theory that gas stations charge more if they are at a stoplight is not supported by the data.
+
+```{r echo=FALSE}
+mean(Price ~ Highway,data=gas)
+diffmean(Price ~ Highway,data=gas)
+boot_highway <- do(10000)*diffmean(Price ~ Highway, data=resample(gas))
+ggplot(data=boot_highway, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference In Mean', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference in
+Mean Price if Gas Station Has Highway Access')
+confint(boot_highway, level=0.95)
+```
+
+### This theory that I investigated suggested if gas stations that have highway access charge more.I boostrapped the data of the difference in mean prices of every gas station compared to if they have hughway access. Once I bootstrapped it I graphed it and got the 95% confidence interval. The 95% confidence interval ranges from 0.009610379	 to 0.08217025. This confidence interval only includes positive values which means that gas staions with highway access charge more than gas stations without highway access. Since the confidence interval only includes positive values and is statistically significant we can conclude that the theory that gas stations charge more if they have highway access is supported by the data.
+
+```{r echo=FALSE}
+gas$Brand[gas$Brand != 'Shell'] <- 'Other'
+mean(Price ~ Brand,data=gas)
+diffmean(Price ~ Brand,data=gas)
+boot_brand <- do(10000)*diffmean(Price ~ Brand, data=resample(gas))
+ggplot(data=boot_brand, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference In Mean', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference in
+Mean Price if Gas Station His Shell or Other Brand')
+confint(boot_brand, level=0.95)
+```
+
+### The last theory that I investigated was if Shell gas staions charge more than non-Shell gas stations. I boostrapped the data of the difference in mean prices of every gas station compared to if they are Shell or not. Once I bootstrapped it I graphed it and got the 95% confidence interval. The 95% confidence interval ranges from -0.008963717 to -0.008963717. This confidence interval contains zero which means its staistically insignificant. Since the interval is statistically insignificant we can conclude that the theory that gas stations charge more if they are Shell is not supported by the data.
+
+## Problem 2
+
+```{r echo=FALSE}
+sclass <- read.csv("sclass.csv")
+sclass_filter1 <- filter(sclass, year == 2011, trim == "63 AMG")
+boot_sclass <- do(10000)*mean(~mileage, data=resample(sclass_filter1))
+ggplot(data=boot_sclass, aes(x= mean)) + geom_histogram(color="black", fill="blue") + labs(x ='Mean Mileage', y='Frequency', title = 'Bootstrap Sampling Distribution for Mean Mileage of 2011 Mercedes S-Class 63 AMG')
+confint(boot_sclass, level=0.95)
+```
+
+### I am 95% confident that mean mileage for 2011 Mercedes S-Class 63 AMG's is between 26,274	and 31,767 miles.
+
+```{r echo=FALSE}
+filtersclass <- filter(sclass, year == 2014, trim == "550")
+filtersclass$color[filtersclass$color != 'Black'] <- 'Other'
+sclassboot <- do(10000)*prop(~color, data=resample(filtersclass))
+ggplot(data=sclassboot, aes(x= prop_Black)) + geom_histogram(color="black", fill="blue") + labs(x ='Proportion of Black Cars', y='Frequency', title = 'Bootstrap Sampling Distribution for Proportion of Black 2014 Mercedes S-Class 550')
+confint(sclassboot, level=0.95)
+```
+
+### I am 95% confident that the proportion of black 2014 Mercedes S-Class 550's is between 42% and 45%.
+
+## Problem 3
+
+```{r echo=FALSE}
+nbc <- read.csv("nbc_pilotsurvey.csv")
+nbc_filt <- filter(nbc, Show == "Living with Ed" | Show == "My Name is Earl")
+mean(Q1_Happy ~ Show,data=nbc_filt)
+diffmean(Q1_Happy ~ Show,data=nbc_filt)
+nbc_boot <- do(10000)*diffmean(Q1_Happy ~ Show, data=resample(nbc_filt))
+ggplot(data=nbc_boot, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference in Mean Happiness', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference of Mean Happiness Between the Shows "Living with Ed" and "My Name is Earl"')
+confint(nbc_boot, level=0.95)
+```
+
+### The first question I'm investigating is whether one of the shows, "Living with Ed" or "My Name is Earl", produces a higher mean happiness response among viewers. To answer the question I filtered the original dataset to only include the two shows and then I bootstrapped the difference in mean happiness score. Lastly, I graphed a histogram of the distribution of the difference in mean happiness score and calculated a 95% confidence interval. I'm 95% confident that the difference in mean happiness score is between -0.3981068 and 0.1001116. Since this interval contains zero it is statistically insignificant and we can conclude that neither of the two shows produces a higher mean happiness score.
+
+```{r echo=FALSE}
+nbc <- read.csv("nbc_pilotsurvey.csv")
+nbc_filt2 <- filter(nbc, Show == "The Biggest Loser" | Show == "The Apprentice: Los Angeles")
+mean(Q1_Annoyed ~ Show,data=nbc_filt2)
+diffmean(Q1_Annoyed ~ Show,data=nbc_filt2)
+nbc_boot2 <- do(10000)*diffmean(Q1_Annoyed ~ Show, data=resample(nbc_filt2))
+ggplot(data=nbc_boot2, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference in Mean Annoyingness', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference of Annoyingness Happiness Between the Shows "The Biggest Loser" and "The Apprentice: Los Angeles"')
+confint(nbc_boot2, level=0.95)
+```
+
+### The next question I'm investigating is whether one of the shows,"The Biggest Loser" or "The Apprentice: Los Angeles", produces a higher mean annoyingness response among viewers. To answer the question I filtered the original dataset to only include the two shows and then I bootstrapped the difference in mean annoyingness score. Lastly, I graphed a histogram of the distribution of the difference in mean annoyingness score and calculated a 95% confidence interval. I'm 95% confident that the difference in mean happiness score is between -0.5171374	 and -0.01970523. Since this interval contains only negative values it shows that "The Apprentice: Los Angeles" produces a higher annoyingness score. In conclusion, the 95% confidence interval supports the show "The Apprentice: Los Angeles" producing a higher annoyingness score.
+
+```{r echo=FALSE}
+nbc <- read.csv("nbc_pilotsurvey.csv")
+nbc_filt3 <- filter(nbc, Show == "Dancing with the Stars")
+nbc_filt3 <- mutate(nbc_filt3, Confuse_Prop = recode(Q2_Confusing, "1" = "FALSE", "2" = "FALSE", "3" = "FALSE", "4" = "TRUE", "5" = "TRUE"))
+prop(~Confuse_Prop,data=nbc_filt3)
+nbc_boot3 <- do(10000)*prop(~Confuse_Prop, data=resample(nbc_filt3))
+ggplot(data=nbc_boot3, aes(x= prop_TRUE)) + geom_histogram(color="black", fill="blue") + labs(x ='Proportion of People Confused', y='Frequency', title = 'Bootstrap Sampling Distribution for DProportion of People Who Find the Show "Dancing with the Stars" Confusing')
+confint(nbc_boot3, level=0.95)
+```
+
+### The last question I'm investigating is what proportion of veiwers of the show, “Dancing with the Stars", find the show confusing. To answer the question I filtered the origonal dataset to only include the two shows and then I mutated the data to show a confusing score of 4 or 5 as TRUE" and values less than that as "FALSE". Next I bootstrapped the the proportion of people who found the show confusing and graphed a histogram. Lastly, I calculated a confidence interval and I'm 95% confident that the proportion of people who find the show confusing is between 0.03867403 and 0.121547. Since this interval contains zero it is statistically insignificant and we can conclude that neither of the two shows produces a higher mean happiness score. In conclusion, the 95% confidence interval show that between 3.8% and 12.2% of viewers of the show “Dancing with the Stars" find it confusing.
+
+## Problem 4
+
+```{r}
+ebay <- read.csv("ebay.csv")
+mean(rev_ratio ~ adwords_pause,data=ebay)
+diffmean(rev_ratio ~ adwords_pause,data=ebay)
+ebay_boot <- do(10000)*diffmean(rev_ratio ~ adwords_pause, data=resample(ebay))
+ggplot(data=ebay_boot, aes(x= diffmean)) + geom_histogram(color="black", fill="blue") + labs(x ='Difference in Mean Revenue Ratio', y='Frequency', title = 'Bootstrap Sampling Distribution for Difference of Mean Revenue Ratio for Ebay When They Pause Advertising"')
+confint(ebay_boot, level=0.95)
+```
+
+### The question I'm trying to answer for this problem is whether paid advertising on Google creates more revenue for Ebay. To answer this question I bootstrapped the difference in the mean revenue ratio for times when Ebay advertisied versus times when they didn't advertise. Then I graphed the bootstrapped data on a histogram and calculated a 95% confidence interval. I am 95% confident that the difference in mean revenue ratio for months where Ebay doesn't advertise on Google is between -0.09068006	and -0.01235228. Since the ratio revenue was lower for the treatment group and is statistically significant we can conclude that paid search advertising on Google creates extra revenue for Ebay. Ebay should go back to doing paid search advertising because when they do their revenue is higher.
