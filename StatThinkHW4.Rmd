@@ -133,7 +133,7 @@ ggplot(data=nbc_boot3, aes(x= prop_TRUE)) + geom_histogram(color="black", fill="
 confint(nbc_boot3, level=0.95)
 ```
 
-### The last question I'm investigating is what proportion of veiwers of the show, “Dancing with the Stars", find the show confusing. To answer the question I filtered the origonal dataset to only include the two shows and then I mutated the data to show a confusing score of 4 or 5 as TRUE" and values less than that as "FALSE". Next I bootstrapped the the proportion of people who found the show confusing and graphed a histogram. Lastly, I calculated a confidence interval and I'm 95% confident that the proportion of people who find the show confusing is between 0.03867403 and 0.121547. Since this interval contains zero it is statistically insignificant and we can conclude that neither of the two shows produces a higher mean happiness score. In conclusion, the 95% confidence interval show that between 3.8% and 12.2% of viewers of the show “Dancing with the Stars" find it confusing.
+### The last question I'm investigating is what proportion of veiwers of the show, “Dancing with the Stars", find the show confusing. To answer the question I filtered the origonal dataset to only include the two shows and then I mutated the data to show a confusing score of 4 or 5 as TRUE" and values less than that as "FALSE". Next I bootstrapped the the proportion of people who found the show confusing and graphed a histogram. Lastly, I calculated a confidence interval and I'm 95% confident that the proportion of people who find the show confusing is between 0.03867403 and 0.121547. In conclusion, the 95% confidence interval show that between 3.8% and 12.2% of viewers of the show “Dancing with the Stars" find it confusing.
 
 ## Problem 4
 
